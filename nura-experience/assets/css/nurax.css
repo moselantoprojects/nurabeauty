@@ -1,0 +1,25 @@
+.nurax-finder{max-width:820px;margin:2rem auto}
+.nurax-quiz{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;background:var(--nura-ivory,#F3E9DC);padding:clamp(20px,3vw,36px);border:1px solid var(--nura-line,rgba(201,162,75,.28))}
+.nurax-field{display:flex;flex-direction:column;gap:.4rem}
+.nurax-field label{font-family:var(--font-ui,sans-serif);text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;color:#555}
+.nurax-field select,.nurax-field input[type=file]{padding:.7em;border:1px solid var(--nura-line,#ccc);background:#fff;font-family:inherit}
+.nurax-selfie,.nurax-quiz>button{grid-column:1/-1}
+.nurax-selfie small{color:#777;font-size:.75rem}
+.nurax-results{margin-top:2rem}
+.nurax-results__note{font-family:var(--font-editorial,serif);font-size:1.3rem;color:var(--nura-plum,#3A1E2E);margin-bottom:1.2rem}
+.nurax-reco{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.nurax-reco a{display:block;text-align:center;border:1px solid var(--nura-line,#eee)}
+.nurax-reco img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.nurax-reco span{display:block;padding:.6rem;font-family:var(--font-display,serif)}
+.nurax-reco b{color:var(--nura-gold,#C9A24B);font-family:var(--font-ui,sans-serif)}
+
+.nurax-tryon{max-width:760px;margin:2rem auto;text-align:center}
+.nurax-tryon__stage{position:relative;background:var(--nura-ivory,#F3E9DC);border:1px solid var(--nura-line,#eee);display:inline-block;max-width:100%}
+.nurax-tryon__stage canvas{max-width:100%;height:auto;touch-action:none;cursor:grab}
+.nurax-tryon__hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#999;pointer-events:none;font-family:var(--font-ui,sans-serif)}
+.nurax-tryon__controls{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center;margin:1.2rem 0}
+.nurax-tryon__controls label{display:flex;gap:.5rem;align-items:center;font-family:var(--font-ui,sans-serif);font-size:.8rem}
+
+.nurax-portal,.nurax-portal-card{background:var(--nura-ivory,#F3E9DC);padding:clamp(18px,2.5vw,32px);border:1px solid var(--nura-line,#eee);margin:1rem 0}
+.nurax-tryon-btn{margin-top:.6rem;display:inline-block}
+@media(max-width:640px){.nurax-quiz,.nurax-reco{grid-template-columns:1fr}}

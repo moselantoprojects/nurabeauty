@@ -59,3 +59,47 @@ function step(){return Math.max(row.clientWidth*0.85,240);}
 if(p){p.addEventListener("click",function(){row.scrollBy({left:-step(),behavior:"smooth"});});}
 if(n){n.addEventListener("click",function(){row.scrollBy({left:step(),behavior:"smooth"});});}
 });})();
+
+
+/* ===== NURA v1.1.0 - Hero slider ===== */
+(function(){var d=document;function r(f){if(d.readyState!=="loading"){f();}else{d.addEventListener("DOMContentLoaded",f);}}
+r(function(){
+	var root=d.querySelector("[data-nura-slider]");if(!root){return;}
+	var slides=[].slice.call(root.querySelectorAll(".nura-slide"));if(slides.length<2){return;}
+	var dotsWrap=root.querySelector("[data-slider-dots]");var cur=0,timer=null;
+	var dots=slides.map(function(s,i){var btn=d.createElement("button");btn.type="button";btn.setAttribute("aria-label","Go to slide "+(i+1));if(i===0){btn.className="is-active";}btn.addEventListener("click",function(){go(i);reset();});if(dotsWrap){dotsWrap.appendChild(btn);}return btn;});
+	function go(i){slides[cur].classList.remove("is-active");if(dots[cur]){dots[cur].classList.remove("is-active");}cur=(i+slides.length)%slides.length;slides[cur].classList.add("is-active");if(dots[cur]){dots[cur].classList.add("is-active");}}
+	function next(){go(cur+1);}function prev(){go(cur-1);}
+	var bn=root.querySelector("[data-slider-next]"),bp=root.querySelector("[data-slider-prev]");
+	if(bn){bn.addEventListener("click",function(){next();reset();});}
+	if(bp){bp.addEventListener("click",function(){prev();reset();});}
+	function start(){timer=window.setInterval(next,6500);}function reset(){window.clearInterval(timer);start();}
+	root.addEventListener("mouseenter",function(){window.clearInterval(timer);});
+	root.addEventListener("mouseleave",start);
+	start();
+});})();
+
+/* ===== NURA v1.1.0 - Product rails ===== */
+(function(){var d=document;function r(f){if(d.readyState!=="loading"){f();}else{d.addEventListener("DOMContentLoaded",f);}}
+r(function(){[].slice.call(d.querySelectorAll("[data-nura-rail]")).forEach(function(rail){
+	var track=rail.querySelector("ul.products");if(!track){return;}
+	var p=rail.querySelector("[data-rail-prev]"),n=rail.querySelector("[data-rail-next]");
+	function step(){var card=track.querySelector("li.product");var w=card?card.getBoundingClientRect().width+24:280;return w*2;}
+	if(p){p.addEventListener("click",function(){track.scrollBy({left:-step(),behavior:"smooth"});});}
+	if(n){n.addEventListener("click",function(){track.scrollBy({left:step(),behavior:"smooth"});});}
+});});})();
+
+/* ===== NURA v1.1.0 - Book a fitting -> WhatsApp ===== */
+(function(){var d=document;function r(f){if(d.readyState!=="loading"){f();}else{d.addEventListener("DOMContentLoaded",f);}}
+r(function(){var form=d.querySelector("[data-nura-book]");if(!form){return;}
+	form.addEventListener("submit",function(e){e.preventDefault();
+		var wa=form.getAttribute("data-wa")||"";
+		var g=function(k){var el=form.querySelector('[name="'+k+'"]');return el?el.value:"";};
+		var parts=["Hello NURA, I would like to book: "+g("service"),"Name: "+g("name"),"Phone: "+g("phone"),"Preferred date: "+g("date"),"Notes: "+g("note")];
+		var text=encodeURIComponent(parts.join("\n"));
+		var base=wa;
+		if(base.indexOf("wa.me")===-1&&base.indexOf("whatsapp")===-1){var digits=(wa||"").replace(/[^0-9]/g,"");base=digits?("https://wa.me/"+digits):"https://wa.me/";}
+		var url=base+(base.indexOf("?")===-1?"?":"&")+"text="+text;
+		window.open(url,"_blank");
+	});
+});})();

@@ -69,8 +69,10 @@
 		var state = { x: canvas.width / 2, y: canvas.height * 0.32, scale: 1, opacity: 1, dragging: false, ox: 0, oy: 0 };
 
 		if (overlayUrl) {
-			wig = new Image(); wig.crossOrigin = 'anonymous';
-			wig.onload = draw; wig.src = overlayUrl;
+			wig = new Image();
+			wig.onload = draw;
+			wig.onerror = function () { if (hint) { hint.textContent = 'Could not load the wig image — open a product and tap Try it on.'; } };
+			wig.src = overlayUrl;
 		}
 
 		function draw() {
@@ -115,3 +117,39 @@
 		}
 	}
 })();
+
+
+/* ===== NURA AI Stylist chat (v1.1.0) ===== */
+(function(){var d=document;function r(f){if(d.readyState!=="loading"){f();}else{d.addEventListener("DOMContentLoaded",f);}}
+r(function(){
+	var root=d.querySelector("[data-nurax-stylist]");if(!root){return;}
+	var panel=root.querySelector("[data-stylist-panel]");
+	var log=root.querySelector("[data-stylist-log]");
+	var form=root.querySelector("[data-stylist-form]");
+	var input=form?form.querySelector('input[name="msg"]'):null;
+	var wa=root.getAttribute("data-wa")||"";
+	var history=[];var busy=false;
+	function openPanel(){if(panel){panel.hidden=false;root.classList.add("is-open");if(input){input.focus();}}}
+	function closePanel(){if(panel){panel.hidden=true;root.classList.remove("is-open");}}
+	var toggle=root.querySelector("[data-stylist-toggle]");
+	if(toggle){toggle.addEventListener("click",function(){if(panel.hidden){openPanel();}else{closePanel();}});}
+	var x=root.querySelector("[data-stylist-close]");if(x){x.addEventListener("click",closePanel);}
+	function esc(s){var e=d.createElement("div");e.textContent=(s==null)?"":String(s);return e.innerHTML;}
+	function addMsg(role,text){var el=d.createElement("div");el.className="nurax-msg nurax-msg--"+(role==="user"?"user":"bot");el.innerHTML=esc(text);log.appendChild(el);log.scrollTop=log.scrollHeight;return el;}
+	function addProducts(items){if(!items||!items.length){return;}var wrap=d.createElement("div");wrap.className="nurax-msg nurax-msg--bot nurax-msg--cards";items.forEach(function(pr){var a=d.createElement("a");a.className="nurax-chip";a.href=pr.url||"#";a.target="_blank";a.rel="noopener";a.innerHTML='<img src="'+esc(pr.img)+'" alt="" loading="lazy"><span>'+esc(pr.name)+'<b>'+esc(pr.price)+'</b></span>';wrap.appendChild(a);});log.appendChild(wrap);log.scrollTop=log.scrollHeight;}
+	function typing(on){var t=log.querySelector(".nurax-typing");if(on){if(t){return;}var el=d.createElement("div");el.className="nurax-msg nurax-msg--bot nurax-typing";el.innerHTML="<span></span><span></span><span></span>";log.appendChild(el);log.scrollTop=log.scrollHeight;}else if(t){t.parentNode.removeChild(t);}}
+	function send(text){
+		if(busy||!text){return;}
+		busy=true;
+		addMsg("user",text);history.push({role:"user",content:text});
+		if(input){input.value="";}
+		typing(true);
+		var rest=(window.NURAX&&NURAX.rest)?NURAX.rest:"/wp-json/nurax/v1/";
+		fetch(rest+"stylist",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:history.slice(-10)})})
+			.then(function(res){return res.json();})
+			.then(function(data){typing(false);var reply=(data&&data.reply)?data.reply:"Sorry, I could not respond just now. Please try WhatsApp.";addMsg("bot",reply);history.push({role:"assistant",content:reply});if(data&&data.products){addProducts(data.products);}busy=false;})
+			.catch(function(){typing(false);var el=addMsg("bot","I am having trouble connecting right now. ");if(wa){var a=d.createElement("a");a.href=wa;a.target="_blank";a.rel="noopener";a.textContent="Chat on WhatsApp";a.className="nurax-msg-link";el.appendChild(a);}busy=false;});
+	}
+	if(form){form.addEventListener("submit",function(e){e.preventDefault();send(input?input.value.trim():"");});}
+	[].slice.call(root.querySelectorAll("[data-q]")).forEach(function(qb){qb.addEventListener("click",function(){send(qb.getAttribute("data-q"));});});
+});})();

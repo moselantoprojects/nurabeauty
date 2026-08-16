@@ -23,3 +23,39 @@
 .nurax-portal,.nurax-portal-card{background:var(--nura-ivory,#F3E9DC);padding:clamp(18px,2.5vw,32px);border:1px solid var(--nura-line,#eee);margin:1rem 0}
 .nurax-tryon-btn{margin-top:.6rem;display:inline-block}
 @media(max-width:640px){.nurax-quiz,.nurax-reco{grid-template-columns:1fr}}
+
+
+/* ===== NURA AI Stylist chat widget (v1.1.0) ===== */
+.nurax-stylist{position:fixed;right:20px;bottom:20px;z-index:9990;font-family:var(--font-body,sans-serif)}
+.nurax-stylist__fab{display:inline-flex;align-items:center;gap:.55rem;border:none;cursor:pointer;background:var(--nura-ink,#0E0E0E);color:var(--nura-ivory,#F3E9DC);padding:.8rem 1.15rem;border-radius:999px;box-shadow:0 12px 34px rgba(14,14,14,.28);font-family:var(--font-ui,sans-serif);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;transition:transform .25s ease}
+.nurax-stylist__fab:hover{transform:translateY(-2px)}
+.nurax-stylist__fab-icon{color:var(--nura-gold,#C9A24B);font-size:1.1rem}
+.nurax-stylist.is-open .nurax-stylist__fab{display:none}
+.nurax-stylist__panel{position:absolute;right:0;bottom:0;width:min(370px,calc(100vw - 32px));height:min(560px,calc(100vh - 100px));background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(14,14,14,.32);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--nura-line,#eee)}
+.nurax-stylist__head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.1rem;background:var(--nura-ink,#0E0E0E);color:#fff}
+.nurax-stylist__head strong{font-family:var(--font-display,serif);font-size:1.05rem;display:block}
+.nurax-stylist__head small{color:var(--nura-gold-soft,#E4C983);font-size:.72rem}
+.nurax-stylist__close{background:none;border:none;color:#fff;font-size:1.5rem;line-height:1;cursor:pointer}
+.nurax-stylist__log{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.6rem;background:var(--nura-ivory,#F7F1E8)}
+.nurax-msg{max-width:85%;padding:.65rem .85rem;border-radius:14px;font-size:.9rem;line-height:1.45;word-wrap:break-word;white-space:pre-wrap}
+.nurax-msg--bot{background:#fff;border:1px solid var(--nura-line,#eee);align-self:flex-start;border-bottom-left-radius:4px;color:#222}
+.nurax-msg--user{background:var(--nura-ink,#0E0E0E);color:var(--nura-ivory,#F3E9DC);align-self:flex-end;border-bottom-right-radius:4px}
+.nurax-msg-link{display:inline-block;margin-left:.3rem;color:var(--nura-gold,#C9A24B);font-weight:600}
+.nurax-msg--cards{background:transparent;border:none;padding:0;max-width:100%;display:flex;gap:.5rem;overflow-x:auto}
+.nurax-chip{flex:0 0 108px;background:#fff;border:1px solid var(--nura-line,#eee);border-radius:10px;overflow:hidden;text-align:left;color:#222}
+.nurax-chip img{width:100%;height:96px;object-fit:cover}
+.nurax-chip span{display:block;padding:.4rem .5rem;font-size:.72rem;line-height:1.3}
+.nurax-chip b{display:block;color:var(--nura-gold,#C9A24B);margin-top:.15rem}
+.nurax-typing{display:flex;gap:4px;align-items:center}
+.nurax-typing span{width:6px;height:6px;border-radius:50%;background:var(--nura-gold,#C9A24B);display:inline-block;animation:nuraxblink 1.2s infinite both}
+.nurax-typing span:nth-child(2){animation-delay:.2s}
+.nurax-typing span:nth-child(3){animation-delay:.4s}
+@keyframes nuraxblink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.nurax-stylist__quick{display:flex;flex-wrap:wrap;gap:.4rem;padding:.55rem 1rem;background:var(--nura-ivory,#F7F1E8)}
+.nurax-stylist__quick button{background:#fff;border:1px solid var(--nura-line,#ddd);border-radius:999px;padding:.35rem .7rem;font-size:.72rem;cursor:pointer;transition:all .2s ease;color:#333}
+.nurax-stylist__quick button:hover{background:var(--nura-gold,#C9A24B);color:#fff;border-color:var(--nura-gold,#C9A24B)}
+.nurax-stylist__input{display:flex;gap:.5rem;padding:.7rem;border-top:1px solid var(--nura-line,#eee);background:#fff}
+.nurax-stylist__input input{flex:1;border:1px solid var(--nura-line,#ddd);border-radius:999px;padding:.6rem .9rem;font-size:.9rem;outline:none}
+.nurax-stylist__input input:focus{border-color:var(--nura-gold,#C9A24B)}
+.nurax-stylist__input button{background:var(--nura-ink,#0E0E0E);color:var(--nura-gold,#C9A24B);border:none;width:42px;flex:0 0 42px;border-radius:50%;cursor:pointer;font-size:1rem}
+@media(max-width:480px){.nurax-stylist{right:12px;bottom:12px}.nurax-stylist__fab-label{display:none}.nurax-stylist__fab{padding:.9rem}.nurax-stylist__panel{height:min(70vh,540px)}}

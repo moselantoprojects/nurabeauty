@@ -93,3 +93,27 @@ function nura_cat_fallback_image( $name ) {
 	}
 	return $b . 'wigs.jpg';
 }
+
+
+if ( function_exists( 'nura_rail' ) === false ) {
+	/**
+	 * Output a horizontal product rail (heading row + scrollable WooCommerce products).
+	 */
+	function nura_rail( $eyebrow, $title, $shortcode, $view_all_url = '', $view_all_label = '' ) {
+		if ( class_exists( 'WooCommerce' ) === false ) { return; }
+		echo '<section class="section nura-rail-section"><div class="nura-container">';
+		echo '<div class="nura-shead nura-shead--row nura-reveal"><div>';
+		if ( $eyebrow ) { echo '<p class="nura-eyebrow">' . esc_html( $eyebrow ) . '</p>'; }
+		echo '<h2>' . esc_html( $title ) . '</h2></div>';
+		if ( $view_all_url ) {
+			$label = $view_all_label ? $view_all_label : __( 'View all', 'nura-beauty' );
+			echo '<a class="nura-rail__viewall" href="' . esc_url( $view_all_url ) . '">' . esc_html( $label ) . ' &#8594;</a>';
+		}
+		echo '</div>';
+		echo '<div class="nura-rail nura-reveal" data-nura-rail>';
+		echo '<button type="button" class="nura-rail__nav nura-rail__nav--prev" data-rail-prev aria-label="' . esc_attr__( 'Scroll left', 'nura-beauty' ) . '">&#8249;</button>';
+		echo '<div class="nura-rail__track">' . do_shortcode( $shortcode ) . '</div>';
+		echo '<button type="button" class="nura-rail__nav nura-rail__nav--next" data-rail-next aria-label="' . esc_attr__( 'Scroll right', 'nura-beauty' ) . '">&#8250;</button>';
+		echo '</div></div></section>';
+	}
+}

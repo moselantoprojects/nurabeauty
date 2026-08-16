@@ -3,7 +3,7 @@
  * Plugin Name:       NURA Experience
  * Plugin URI:        https://nura.co.ke
  * Description:       NURA's three exclusive features: AI Wig Finder, Virtual Try-On, and The NURA Circle luxury client portal (order history, care schedule, warranty certificates, maintenance reminders, loyalty points, VIP membership). Requires WooCommerce.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            NURA - The House of Radiant Confidence
  * License:           GPL-2.0-or-later
  * Text Domain:       nura-experience
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'NURAX_VERSION', '1.0.0' );
+define( 'NURAX_VERSION', '1.1.0' );
 define( 'NURAX_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NURAX_URL', plugin_dir_url( __FILE__ ) );
 
@@ -26,6 +26,7 @@ require_once NURAX_DIR . 'includes/class-ai-wig-finder.php';
 require_once NURAX_DIR . 'includes/class-virtual-tryon.php';
 require_once NURAX_DIR . 'includes/class-nura-circle.php';
 require_once NURAX_DIR . 'includes/class-settings.php';
+require_once NURAX_DIR . 'includes/class-ai-stylist.php';
 
 /**
  * Boot.
@@ -35,6 +36,7 @@ function nurax_init() {
 	new NURAX_Virtual_TryOn();
 	new NURAX_Circle();
 	new NURAX_Settings();
+	new NURAX_AI_Stylist();
 }
 add_action( 'plugins_loaded', 'nurax_init' );
 

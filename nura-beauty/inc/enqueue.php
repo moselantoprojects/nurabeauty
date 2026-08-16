@@ -76,3 +76,19 @@ function nura_admin_assets( $hook ) {
 	}
 }
 add_action( 'admin_enqueue_scripts', 'nura_admin_assets' );
+
+
+/**
+ * Preload the LCP hero image on the front page (improves Largest Contentful Paint).
+ */
+function nura_preload_lcp() {
+	if ( ! is_front_page() ) {
+		return;
+	}
+	$hero = function_exists( 'nura_opt' ) ? nura_opt( 'nura_hero_image' ) : '';
+	if ( empty( $hero ) ) {
+		$hero = NURA_URI . 'assets/images/hero.jpg';
+	}
+	printf( '<link rel="preload" as="image" href="%s" fetchpriority="high" />' . "\n", esc_url( $hero ) );
+}
+add_action( 'wp_head', 'nura_preload_lcp', 1 );

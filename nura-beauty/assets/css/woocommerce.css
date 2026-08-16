@@ -45,3 +45,15 @@
 /* In a grid container these ::before/::after become phantom cells that leave an
    empty first slot and push every product one place over. Neutralise them. */
 .woocommerce ul.products::before,.woocommerce ul.products::after,.woocommerce-page ul.products::before,.woocommerce-page ul.products::after,ul.products.nura-home-products::before,ul.products.nura-home-products::after{content:none!important;display:none!important}
+
+
+/* ===== NURA v1.2.0 - shop review/related/toolbar polish ===== */
+.woocommerce-result-count{font-family:var(--font-ui);font-size:.8rem;color:#777;letter-spacing:.04em}
+.woocommerce-ordering select{font-family:var(--font-ui);font-size:.82rem;padding:.5rem .7rem;border:1px solid var(--nura-line);border-radius:6px;background:#fff}
+.related.products,.up-sells.products,.cross-sells{margin-top:clamp(44px,6vw,84px)}
+.related.products>h2,.up-sells>h2,.cross-sells>h2{font-family:var(--font-display);font-size:clamp(1.4rem,2.4vw,2rem);margin-bottom:1.4rem;text-align:left}
+#reviews .commentlist{list-style:none;padding:0}
+#reviews .comment-text{background:var(--nura-ivory);padding:1.2rem 1.4rem;border-radius:8px;border:1px solid var(--nura-line)}
+#reviews .star-rating{color:var(--nura-gold)}
+#reviews .woocommerce-Reviews-title,#reviews h2{font-family:var(--font-display)}
+.woocommerce #review_form #respond textarea,.woocommerce #review_form #respond input[type=text],.woocommerce #review_form #respond input[type=email]{border:1px solid var(--nura-line);border-radius:6px;padding:.7rem .8rem}

@@ -116,3 +116,32 @@ add_filter( 'the_content', function ( $content ) {
 	}
 	return $content;
 } );
+
+
+/**
+ * [nura_lookbook] - an editorial gallery of signature looks (uses bundled imagery, links to shop).
+ */
+add_shortcode( 'nura_lookbook', function () {
+	$shop  = function_exists( 'wc_get_page_id' ) ? get_permalink( wc_get_page_id( 'shop' ) ) : home_url( '/shop/' );
+	$items = array(
+		array( 'img' => 'hero.jpg',            'title' => 'The Signature', 'tag' => 'Everyday luxe' ),
+		array( 'img' => 'hero-2.jpg',          'title' => 'The Bride',     'tag' => 'Bridal & occasion' ),
+		array( 'img' => 'model-editorial.jpg', 'title' => 'The Icon',      'tag' => 'HD lace front' ),
+		array( 'img' => 'hero-3.jpg',          'title' => 'The Statement', 'tag' => 'Confidence line' ),
+		array( 'img' => 'look-bob.jpg',        'title' => 'The Bob',       'tag' => 'Ready to wear' ),
+		array( 'img' => 'look-curls.jpg',      'title' => 'The Curls',     'tag' => 'Textured' ),
+	);
+	ob_start();
+	echo '<div class="nura-lookbook">';
+	foreach ( $items as $it ) {
+		printf(
+			'<a class="nura-look" href="%1$s"><img src="%2$s" alt="%3$s" loading="lazy"><span class="nura-look__cap"><small>%4$s</small><strong>%3$s</strong></span></a>',
+			esc_url( $shop ),
+			esc_url( NURA_URI . 'assets/images/' . $it['img'] ),
+			esc_attr( $it['title'] ),
+			esc_html( $it['tag'] )
+		);
+	}
+	echo '</div>';
+	return ob_get_clean();
+} );

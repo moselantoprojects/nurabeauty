@@ -11,44 +11,82 @@
 
 	/* ---------- AI Wig Finder ---------- */
 	function initFinder() {
-		var root = d.querySelector('[data-nurax-finder]');
-		if (!root) { return; }
-		var form = root.querySelector('.nurax-quiz');
-		var results = root.querySelector('[data-nurax-results]');
+			var root = d.querySelector('[data-nurax-finder]');
+			if (!root) { return; }
+			var quiz = root.querySelector('[data-nurax-quiz]');
+			var steps = [].slice.call(root.querySelectorAll('.nurax-step'));
+			var results = root.querySelector('[data-nurax-results]');
+			var bar = root.querySelector('[data-nurax-progress]');
+			var backBtn = root.querySelector('[data-nurax-back]');
+			var nextBtn = root.querySelector('[data-nurax-next]');
+			var submitBtn = root.querySelector('[data-nurax-submit]');
+			var answers = {};
+			var cur = 0;
+			if (!steps.length || !quiz) { return; }
 
-		form.addEventListener('submit', function (e) {
-			e.preventDefault();
-			var fd = new FormData(form);
-			var payload = {
-				face: fd.get('face'), tone: fd.get('tone'),
-				life: fd.get('life'), budget: fd.get('budget')
-			};
-			results.hidden = false;
-			results.innerHTML = '<p>Finding your perfect match…</p>';
-
-			fetch((window.NURAX && NURAX.rest ? NURAX.rest : '/wp-json/nurax/v1/') + 'wig-finder', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload)
-			}).then(function (r) { return r.json(); }).then(function (data) {
-				if (!data || !data.products || !data.products.length) {
-					results.innerHTML = '<p>No exact match right now — <a href="/book-appointment/">book a free consultation</a> and we will find your crown.</p>';
-					return;
-				}
-				var html = '<p class="nurax-results__note">' + (data.note || 'Your matches') + '</p><div class="nurax-reco">';
-				data.products.forEach(function (p) {
-					html += '<a href="' + p.url + '"><img src="' + p.img + '" alt="' + p.name + '" loading="lazy"><span>' + p.name + '<br><b>' + p.price + '</b></span></a>';
+			[].slice.call(root.querySelectorAll('.nurax-opts')).forEach(function (grp) {
+				var field = grp.getAttribute('data-field');
+				[].slice.call(grp.querySelectorAll('button')).forEach(function (b) {
+					b.addEventListener('click', function () {
+						[].slice.call(grp.querySelectorAll('button')).forEach(function (o) { o.classList.remove('is-sel'); });
+						b.classList.add('is-sel');
+						answers[field] = b.getAttribute('data-value');
+					});
 				});
-				html += '</div>';
-				results.innerHTML = html;
-				results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-			}).catch(function () {
-				results.innerHTML = '<p>Something went wrong. Please try again or <a href="/book-appointment/">book a consultation</a>.</p>';
 			});
-		});
-	}
 
-	/* ---------- Virtual Try-On (client-side canvas overlay MVP) ---------- */
+			function show(i) {
+				cur = Math.max(0, Math.min(i, steps.length - 1));
+				steps.forEach(function (s2, idx) { s2.classList.toggle('is-active', idx === cur); });
+				if (bar) { bar.style.width = Math.round(((cur + 1) / steps.length) * 100) + '%'; }
+				var last = (cur === steps.length - 1);
+				if (backBtn) { backBtn.hidden = (cur === 0); }
+				if (nextBtn) { nextBtn.hidden = last; }
+				if (submitBtn) { submitBtn.hidden = !last; }
+			}
+			if (nextBtn) { nextBtn.addEventListener('click', function () { show(cur + 1); }); }
+			if (backBtn) { backBtn.addEventListener('click', function () { show(cur - 1); }); }
+
+			quiz.addEventListener('submit', function (e) {
+				e.preventDefault();
+				function val(sel) { var el = quiz.querySelector(sel); return el ? el.value : ''; }
+				var name = val('[name="name"]');
+				var phone = val('[name="phone"]');
+				if (!name || !phone) { window.alert('Please add your name and phone so we can send your recommendation.'); return; }
+				var consentEl = quiz.querySelector('[name="consent"]');
+				var payload = {
+					face: answers.face || '', texture: answers.texture || '', length: answers.length || '',
+					life: answers.life || '', budget: answers.budget || '',
+					name: name, phone: phone, email: val('[name="email"]'), concern: val('[name="concern"]'),
+					consent: (consentEl && consentEl.checked) ? 1 : 0
+				};
+				results.hidden = false;
+				results.innerHTML = '<p class="nurax-results__note">Finding your perfect match...</p>';
+				results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+				fetch((window.NURAX && NURAX.rest ? NURAX.rest : '/wp-json/nurax/v1/') + 'wig-finder', {
+					method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+				}).then(function (r) { return r.json(); }).then(function (data) {
+					var html = '<p class="nurax-results__note">' + (data && data.note ? data.note : 'Your matches') + '</p>';
+					if (data && data.products && data.products.length) {
+						html += '<div class="nurax-reco">';
+						data.products.forEach(function (pr) {
+							html += '<a href="' + pr.url + '"><img src="' + pr.img + '" alt="' + pr.name + '" loading="lazy"><span>' + pr.name + '<br><b>' + pr.price + '</b></span></a>';
+						});
+						html += '</div>';
+					}
+					html += '<div class="nurax-results__cta">';
+					if (data && data.whatsapp) { html += '<a class="nura-btn nura-btn--gold" href="' + data.whatsapp + '" target="_blank" rel="noopener">Book a fitting on WhatsApp</a>'; }
+					html += '<a class="nura-btn nura-btn--ghost" href="' + ((window.NURAX && NURAX.shopUrl) ? NURAX.shopUrl : '/shop/') + '">Browse all wigs</a></div>';
+					results.innerHTML = html;
+				}).catch(function () {
+					results.innerHTML = '<p>Something went wrong. Please try again or <a href="/book-appointment/">book a consultation</a>.</p>';
+				});
+			});
+
+			show(0);
+		}
+
+		/* ---------- Virtual Try-On (client-side canvas overlay MVP) ---------- */
 	function initTryOn() {
 		var root = d.querySelector('[data-nurax-tryon]');
 		if (!root) { return; }
@@ -129,10 +167,10 @@ r(function(){
 	var input=form?form.querySelector('input[name="msg"]'):null;
 	var wa=root.getAttribute("data-wa")||"";
 	var history=[];var busy=false;
-	function openPanel(){if(panel){panel.hidden=false;root.classList.add("is-open");if(input){input.focus();}}}
-	function closePanel(){if(panel){panel.hidden=true;root.classList.remove("is-open");}}
+	function openPanel(){root.classList.add("is-open");if(panel){panel.removeAttribute("hidden");}if(input){input.focus();}}
+	function closePanel(){root.classList.remove("is-open");if(panel){panel.setAttribute("hidden","");}}
 	var toggle=root.querySelector("[data-stylist-toggle]");
-	if(toggle){toggle.addEventListener("click",function(){if(panel.hidden){openPanel();}else{closePanel();}});}
+	if(toggle){toggle.addEventListener("click",function(){if(root.classList.contains("is-open")){closePanel();}else{openPanel();}});}
 	var x=root.querySelector("[data-stylist-close]");if(x){x.addEventListener("click",closePanel);}
 	function esc(s){var e=d.createElement("div");e.textContent=(s==null)?"":String(s);return e.innerHTML;}
 	function addMsg(role,text){var el=d.createElement("div");el.className="nurax-msg nurax-msg--"+(role==="user"?"user":"bot");el.innerHTML=esc(text);log.appendChild(el);log.scrollTop=log.scrollHeight;return el;}
@@ -152,4 +190,30 @@ r(function(){
 	}
 	if(form){form.addEventListener("submit",function(e){e.preventDefault();send(input?input.value.trim():"");});}
 	[].slice.call(root.querySelectorAll("[data-q]")).forEach(function(qb){qb.addEventListener("click",function(){send(qb.getAttribute("data-q"));});});
+});})();
+
+
+/* ===== NURA Quick View (v1.2.0) ===== */
+(function(){var d=document;function r(f){if(d.readyState!=="loading"){f();}else{d.addEventListener("DOMContentLoaded",f);}}
+r(function(){
+	var modal=d.querySelector("[data-qv-modal]");if(!modal){return;}
+	var body=modal.querySelector("[data-qv-body]");
+	function openM(){modal.hidden=false;modal.classList.add("is-open");d.body.style.overflow="hidden";}
+	function closeM(){modal.hidden=true;modal.classList.remove("is-open");d.body.style.overflow="";}
+	[].slice.call(modal.querySelectorAll("[data-qv-close]")).forEach(function(x){x.addEventListener("click",closeM);});
+	d.addEventListener("keyup",function(e){if(e.key==="Escape"){closeM();}});
+	d.addEventListener("click",function(e){
+		var el=e.target;while(el&&el.nodeType!==1){el=el.parentNode;}
+		var btn=(el&&el.closest)?el.closest(".nura-qv"):null;
+		if(!btn){return;}
+		e.preventDefault();
+		var id=btn.getAttribute("data-qv");
+		body.innerHTML='<p class="nura-qv-loading">Loading...</p>';openM();
+		var rest=(window.NURAX&&NURAX.rest)?NURAX.rest:"/wp-json/nurax/v1/";
+		fetch(rest+"quickview?id="+encodeURIComponent(id)).then(function(res){return res.json();}).then(function(pr){
+			if(!pr||pr.error){body.innerHTML='<p style="padding:2rem">Sorry, this product could not be loaded.</p>';return;}
+			body.innerHTML='<div class="nura-qv-grid"><div class="nura-qv-media"><img src="'+pr.image+'" alt=""></div><div class="nura-qv-info"><h3>'+pr.title+'</h3><div class="nura-qv-price">'+(pr.price||"")+'</div><div class="nura-qv-desc">'+(pr.excerpt||"")+'</div><div class="nura-qv-actions">'+(pr.add||"")+'<a class="nura-btn nura-btn--ghost" href="'+pr.url+'">Full details</a></div></div></div>';
+			if(window.jQuery){window.jQuery(d.body).trigger("wc_fragment_refresh");}
+		}).catch(function(){body.innerHTML='<p style="padding:2rem">Sorry, something went wrong.</p>';});
+	});
 });})();

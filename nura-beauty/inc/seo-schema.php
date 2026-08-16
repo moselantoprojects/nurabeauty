@@ -170,3 +170,35 @@ function nura_breadcrumb_schema( $crumbs ) {
 	);
 	echo '<script type="application/ld+json">' . wp_json_encode( $data ) . '</script>' . "\n";
 }
+
+
+/**
+ * LocalBusiness JSON-LD for local SEO (front page). Complements the Organization node.
+ */
+function nura_localbusiness_schema() {
+	if ( nura_seo_plugin_active() || ! is_front_page() ) {
+		return;
+	}
+	$data = array(
+		'@context'   => 'https://schema.org',
+		'@type'      => 'HealthAndBeautyBusiness',
+		'name'       => get_bloginfo( 'name' ),
+		'url'        => home_url( '/' ),
+		'image'      => wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'full' ),
+		'telephone'  => get_theme_mod( 'nura_phone', '' ),
+		'priceRange' => 'KES',
+		'areaServed' => 'Kenya',
+		'address'    => array_filter( array(
+			'@type'           => 'PostalAddress',
+			'addressLocality' => get_theme_mod( 'nura_city', 'Nairobi' ),
+			'addressCountry'  => 'KE',
+			'streetAddress'   => get_theme_mod( 'nura_address', '' ),
+		) ),
+	);
+	$hours = get_theme_mod( 'nura_hours', '' );
+	if ( $hours ) {
+		$data['openingHours'] = $hours;
+	}
+	echo '<script type="application/ld+json">' . wp_json_encode( array_filter( $data ) ) . '</script>' . "\n";
+}
+add_action( 'wp_head', 'nura_localbusiness_schema', 6 );

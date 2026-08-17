@@ -117,3 +117,48 @@ if ( function_exists( 'nura_rail' ) === false ) {
 		echo '</div></div></section>';
 	}
 }
+
+
+if ( function_exists( 'nura_recent_reviews' ) === false ) {
+	/**
+	 * Fetch recent approved WooCommerce product reviews for on-site social proof.
+	 *
+	 * @param int $limit      Max reviews to return.
+	 * @param int $min_rating Minimum star rating to include (1-5).
+	 * @return array List of [author, rating, text, product, url, date].
+	 */
+	function nura_recent_reviews( $limit = 6, $min_rating = 4 ) {
+		if ( class_exists( 'WooCommerce' ) === false ) {
+			return array();
+		}
+		$comments = get_comments( array(
+			'status'    => 'approve',
+			'post_type' => 'product',
+			'type'      => 'review',
+			'number'    => 40,
+		) );
+		$out = array();
+		foreach ( $comments as $c ) {
+			$rating = (int) get_comment_meta( $c->comment_ID, 'rating', true );
+			if ( $rating && $rating < $min_rating ) {
+				continue;
+			}
+			$text = trim( wp_strip_all_tags( $c->comment_content ) );
+			if ( '' === $text ) {
+				continue;
+			}
+			$out[] = array(
+				'author'  => $c->comment_author ? $c->comment_author : __( 'NURA client', 'nura-beauty' ),
+				'rating'  => $rating ? $rating : 5,
+				'text'    => $text,
+				'product' => get_the_title( $c->comment_post_ID ),
+				'url'     => get_permalink( $c->comment_post_ID ),
+				'date'    => $c->comment_date,
+			);
+			if ( count( $out ) >= $limit ) {
+				break;
+			}
+		}
+		return $out;
+	}
+}

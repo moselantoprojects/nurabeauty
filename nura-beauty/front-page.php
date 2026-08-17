@@ -44,11 +44,7 @@ $slides = array(
 	),
 );
 
-$reviews = array(
-	array( 'q' => 'My HD lace melted seamlessly and no one could tell it was a wig. Same-day delivery in Nairobi too. I feel like a queen.', 'n' => 'Wanjiru M.', 'r' => 'Nairobi' ),
-	array( 'q' => 'The quality is unreal for the price. Soft, full, and still gorgeous months later with the care guide they sent.', 'n' => 'Amina H.', 'r' => 'Mombasa' ),
-	array( 'q' => 'Booked a fitting and got exactly the bridal look I wanted for my wedding. Worth every shilling.', 'n' => 'Cynthia O.', 'r' => 'Kisumu' ),
-);
+$reviews = function_exists( 'nura_recent_reviews' ) ? nura_recent_reviews( 3 ) : array();
 ?>
 <main id="primary" class="site-main">
 
@@ -157,7 +153,8 @@ $reviews = array(
 	<?php nura_rail( __( 'Most loved', 'nura-beauty' ), __( 'The house favourites', 'nura-beauty' ), '[products limit="12" columns="12" orderby="popularity" class="nura-rail-products"]', $shop_url ); ?>
 	<?php endif; ?>
 
-	<!-- REVIEWS -->
+	<!-- REVIEWS (live WooCommerce product reviews) -->
+	<?php if ( ! empty( $reviews ) ) : ?>
 	<section class="section">
 		<div class="nura-container">
 			<div class="nura-shead nura-reveal">
@@ -165,19 +162,27 @@ $reviews = array(
 				<h2><?php esc_html_e( 'Crowned with confidence', 'nura-beauty' ); ?></h2>
 			</div>
 			<div class="nura-reviews nura-reveal">
-				<?php foreach ( $reviews as $rv ) : ?>
+				<?php
+				foreach ( $reviews as $rv ) :
+					$rname = isset( $rv['author'] ) ? $rv['author'] : 'NURA client';
+					$rtext = isset( $rv['text'] ) ? $rv['text'] : '';
+					$rrate = isset( $rv['rating'] ) ? (int) $rv['rating'] : 5;
+					$rprod = isset( $rv['product'] ) ? $rv['product'] : '';
+					$rurl  = isset( $rv['url'] ) ? $rv['url'] : '';
+					?>
 					<figure class="nura-review">
-						<div class="nura-review__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-						<blockquote><?php echo esc_html( $rv['q'] ); ?></blockquote>
+						<div class="nura-review__stars" aria-hidden="true"><?php echo str_repeat( '&#9733;', max( 1, min( 5, $rrate ) ) ); ?></div>
+						<blockquote><?php echo esc_html( $rtext ); ?></blockquote>
 						<figcaption>
-							<span class="nura-review__avatar"><?php echo esc_html( mb_substr( $rv['n'], 0, 1 ) ); ?></span>
-							<span><strong><?php echo esc_html( $rv['n'] ); ?></strong><br><small><?php echo esc_html( $rv['r'] ); ?></small></span>
+							<span class="nura-review__avatar"><?php echo esc_html( mb_substr( $rname, 0, 1 ) ); ?></span>
+							<span><strong><?php echo esc_html( $rname ); ?></strong><?php if ( $rprod ) : ?><br><small><?php if ( $rurl ) : ?><a href="<?php echo esc_url( $rurl ); ?>"><?php echo esc_html( $rprod ); ?></a><?php else : echo esc_html( $rprod ); endif; ?></small><?php endif; ?></span>
 						</figcaption>
 					</figure>
 				<?php endforeach; ?>
 			</div>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<!-- RAIL: GREAT VALUE -->
 	<?php if ( class_exists( 'WooCommerce' ) ) : ?>

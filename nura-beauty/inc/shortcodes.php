@@ -145,3 +145,29 @@ add_shortcode( 'nura_lookbook', function () {
 	echo '</div>';
 	return ob_get_clean();
 } );
+
+
+/**
+ * [nura_reviews limit="6"] - a grid of recent real customer reviews.
+ */
+add_shortcode( 'nura_reviews', function ( $atts ) {
+	$atts    = shortcode_atts( array( 'limit' => 6 ), $atts, 'nura_reviews' );
+	$reviews = function_exists( 'nura_recent_reviews' ) ? nura_recent_reviews( (int) $atts['limit'] ) : array();
+	if ( empty( $reviews ) ) {
+		return '<p class="nura-reviews-empty">' . esc_html__( 'Be the first to review a NURA unit - your words will appear here.', 'nura-beauty' ) . '</p>';
+	}
+	ob_start();
+	echo '<div class="nura-reviews">';
+	foreach ( $reviews as $rv ) {
+		echo '<figure class="nura-review">';
+		echo '<div class="nura-review__stars" aria-hidden="true">' . str_repeat( '&#9733;', max( 1, min( 5, (int) $rv['rating'] ) ) ) . '</div>';
+		echo '<blockquote>' . esc_html( $rv['text'] ) . '</blockquote>';
+		echo '<figcaption><span class="nura-review__avatar">' . esc_html( mb_substr( $rv['author'], 0, 1 ) ) . '</span><span><strong>' . esc_html( $rv['author'] ) . '</strong>';
+		if ( ! empty( $rv['product'] ) ) {
+			echo '<br><small><a href="' . esc_url( $rv['url'] ) . '">' . esc_html( $rv['product'] ) . '</a></small>';
+		}
+		echo '</span></figcaption></figure>';
+	}
+	echo '</div>';
+	return ob_get_clean();
+} );
